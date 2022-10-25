@@ -6,11 +6,12 @@ from api_routine.models import Routine, RoutineDay, RoutineResult
 
 
 class RoutineUpdateSerializer(ModelSerializer):
-    days = serializers.ListField(child=serializers.CharField(max_length=3))
+    days = serializers.ListField(child=serializers.CharField(max_length=3), write_only=True)
 
     class Meta:
         model = Routine
-        fields = ["title", "category", "goal", "is_alarm", "days"]
+        fields = ["routine_id", "title", "category", "goal", "is_alarm", "days"]
+        read_only_fields = ["routine_id"]
 
     def create(self, validated_data):
         columns = dict()
@@ -22,5 +23,5 @@ class RoutineUpdateSerializer(ModelSerializer):
             routine = Routine.objects.create(**columns)
             RoutineResult.objects.create(routine=routine)
             [RoutineDay.objects.create(routine=routine, day=day) for day in validated_data["days"]]
-        return validated_data
+        return routine
 
