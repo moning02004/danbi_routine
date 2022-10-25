@@ -1,5 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 
+from api_user.models import Account
 from api_user.serializers import UserUpdateSerializer
 
 

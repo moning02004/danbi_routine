@@ -21,3 +21,5 @@ class UserUpdateSerializer(ModelSerializer):
         account = Account.objects.create(username=validated_data["username"])
         account.set_password(validated_data["password"])
         account.save()
+
+        return account
