@@ -21,6 +21,7 @@ list_method = {
     "post": "create"
 }
 urlpatterns = [
+    path("routines", include("api_routine.urls")),
     path("users", include("api_user.urls")),
     path('admin/', admin.site.urls),
 ]
