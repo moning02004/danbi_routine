@@ -27,12 +27,13 @@ Routine 은 개인적인 목표를 다루는 것이기에 Routine 에 관한 API
 
 ###routine 삭제
 
-- DELETE /routines/{routine_id}
+*is_deleted 를 True 로 변경하기 위한 end-point 로 method 를 PATCH 로 하여 호출할 수 있도록 하였습니다.* 
+- PATCH /routines/{routine_id}/delete
 
 
 
 ###routine 완료
 
-*Routine 의 완료를 위한 API 를 추가했습니다.*
+*Routine 의 결과를 변경하기 위한 API 를 추가했습니다.*
 
-- PATCH /routines/{routine_id}/complete
+- PATCH /routines/{routine_id}/result

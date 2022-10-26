@@ -88,7 +88,7 @@ class RoutineTestCase(APITestCase):
 
         edit_result = "TRY"
         self.client.login(username="a@a.com", password="1q2w3e4r!")
-        response = self.client.patch(f"/routines/{routine.routine_id}/complete", data={
+        response = self.client.patch(f"/routines/{routine.routine_id}/result", data={
             "result": edit_result
         })
         self.assertEqual(response.status_code, 200)

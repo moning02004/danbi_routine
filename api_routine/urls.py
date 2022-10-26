@@ -7,5 +7,5 @@ urlpatterns = [
     path("", RoutineListViewsets.as_view(list_method)),
     path("/<int:pk>", RoutineSingleViewsets.as_view(detail_method)),
     path("/<int:pk>/delete", RoutineDeleteAPI.as_view()),
-    path("/<int:pk>/complete", RoutineResultAPI.as_view())
+    path("/<int:pk>/result", RoutineResultAPI.as_view())
 ]
