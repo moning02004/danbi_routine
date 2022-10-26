@@ -17,15 +17,18 @@ class Routine(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         db_table = "routine"
 
 
 class RoutineResult(models.Model):
     routine_result_id = models.BigAutoField(primary_key=True)
-    routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+    routine = models.OneToOneField(Routine, on_delete=models.CASCADE, related_name="routine")
 
-    result = models.CharField(max_length=4, choices=(
+    result = models.CharField(max_length=4, default="NOT", choices=(
         ("NOT", "안함"), ("TRY", "시도"), ("DONE", "완료")
     ))
     is_deleted = models.BooleanField(default=False)
