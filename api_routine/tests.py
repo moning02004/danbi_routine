@@ -77,7 +77,21 @@ class RoutineTestCase(APITestCase):
         routine = self.get_temporary_routine()
 
         self.client.login(username="a@a.com", password="1q2w3e4r!")
-        response = self.client.delete(f"/routines/{routine.routine_id}")
-        self.assertEqual(response.status_code, 204)
+        response = self.client.patch(f"/routines/{routine.routine_id}/delete")
+        self.assertEqual(response.status_code, 200)
 
-        self.assertFalse(Routine.objects.filter(routine_id=routine.routine_id).exists())
+        routine.refresh_from_db()
+        self.assertTrue(routine.is_deleted)
+
+    def test_result_routines(self):
+        routine = self.get_temporary_routine()
+
+        edit_result = "TRY"
+        self.client.login(username="a@a.com", password="1q2w3e4r!")
+        response = self.client.patch(f"/routines/{routine.routine_id}/complete", data={
+            "result": edit_result
+        })
+        self.assertEqual(response.status_code, 200)
+
+        routine.refresh_from_db()
+        self.assertEqual(routine.result.result, edit_result)

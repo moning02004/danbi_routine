@@ -46,3 +46,29 @@ class RoutineUpdateSerializer(ModelSerializer):
                                                 set(validated_data["days"]) - set(
                                                     instance.days.values_list("day", flat=True))])
         return instance
+
+
+class RoutineDeleteSerializer(ModelSerializer):
+    class Meta:
+        model = Routine
+        fields = ["routine_id"]
+        read_only_fields = ["routine_id"]
+
+    def update(self, instance, validated_data):
+        instance.is_deleted = True
+        instance.save()
+        return instance
+
+
+class RoutineResultSerializer(ModelSerializer):
+    result = serializers.CharField(max_length=4, write_only=True, required=True)
+
+    class Meta:
+        model = Routine
+        fields = ["routine_id", "result"]
+        read_only_fields = ["routine_id"]
+
+    def update(self, instance, validated_data):
+        instance.result.result = validated_data["result"]
+        instance.result.save()
+        return instance

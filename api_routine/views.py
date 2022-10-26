@@ -1,11 +1,13 @@
 from datetime import timedelta, datetime
 
 from django.db.models import Q
+from rest_framework.generics import UpdateAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ModelViewSet
 
 from api_routine.models import Routine
-from api_routine.serializers import RoutineUpdateSerializer, RoutineSerializer
+from api_routine.serializers import RoutineUpdateSerializer, RoutineSerializer, RoutineDeleteSerializer, \
+    RoutineResultSerializer
 
 
 class ResponseModelMixin:
@@ -59,17 +61,13 @@ class RoutineListViewsets(ModelViewSet, ResponseModelMixin):
 
 
 class RoutineSingleViewsets(ModelViewSet, ResponseModelMixin):
-    def get_queryset(self):
-        query = Q(account_id=self.request.user.id)
-        return Routine.objects.filter(query)
+    queryset = Routine.objects.all()
 
     def get_serializer_class(self):
         if self.action == "retrieve":
             return RoutineSerializer
         if self.action == "partial_update":
             return RoutineUpdateSerializer
-        if self.action == "destroy":
-            return ModelSerializer
 
     def retrieve(self, request, *args, **kwargs):
         response = super().retrieve(request, *args, **kwargs)
@@ -95,15 +93,20 @@ class RoutineSingleViewsets(ModelViewSet, ResponseModelMixin):
         response.data = self.get_response_model()
         return response
 
-    def destroy(self, request, *args, **kwargs):
-        response = super().destroy(request, *args, **kwargs)
 
-        self.response_data = {
-            "routine_id": kwargs["pk"]
-        }
-        self.response_message = {
-            "msg": "The routine has been deleted.",
-            "status": "ROUTINE_DELETE_OK"
-        }
-        response.data = self.get_response_model()
+class RoutineDeleteAPI(UpdateAPIView):
+    queryset = Routine.objects.all()
+    serializer_class = RoutineDeleteSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+        return response
+
+
+class RoutineResultAPI(UpdateAPIView):
+    queryset = Routine.objects.all()
+    serializer_class = RoutineResultSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
         return response

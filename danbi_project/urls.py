@@ -23,7 +23,6 @@ list_method = {
 detail_method = {
     "get": "retrieve",
     "patch": "partial_update",
-    "delete": "destroy"
 }
 urlpatterns = [
     path("routines", include("api_routine.urls")),
