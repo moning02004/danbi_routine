@@ -68,6 +68,8 @@ class RoutineSingleViewsets(ModelViewSet, ResponseModelMixin):
             return RoutineSerializer
         if self.action == "partial_update":
             return RoutineUpdateSerializer
+        if self.action == "destroy":
+            return ModelSerializer
 
     def retrieve(self, request, *args, **kwargs):
         response = super().retrieve(request, *args, **kwargs)
@@ -89,6 +91,19 @@ class RoutineSingleViewsets(ModelViewSet, ResponseModelMixin):
         self.response_message = {
             "msg": "The routine has been modified.",
             "status": "ROUTINE_UPDATE_OK"
+        }
+        response.data = self.get_response_model()
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+
+        self.response_data = {
+            "routine_id": kwargs["pk"]
+        }
+        self.response_message = {
+            "msg": "The routine has been deleted.",
+            "status": "ROUTINE_DELETE_OK"
         }
         response.data = self.get_response_model()
         return response
