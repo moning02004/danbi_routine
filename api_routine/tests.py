@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from rest_framework.test import APITestCase
 
 from api_routine.models import Routine, RoutineDay, RoutineResult
@@ -27,16 +29,29 @@ class RoutineTestCase(APITestCase):
         self.assertEqual(RoutineDay.objects.filter(routine=routine).count(), 3)
 
     def test_get_routines(self):
-        for index in range(2):
+        length = 3
+        for index in range(length):
             routine = Routine.objects.create(account=self.user,
                                              title=f"Math Problem-solving {index}",
                                              category="HOMEWORK",
                                              goal=f"Increase your problem-sovling skills {index}",
                                              is_alarm=True)
+
+            date = datetime.strptime("2022-02-22", "%Y-%m-%d") - timedelta(days=index)
+            routine.created_at = date
+            routine.modified_at = date
+            routine.save()
+
             RoutineResult.objects.create(routine=routine)
             [RoutineDay.objects.create(routine=routine, day=day) for day in ["MON", "TUE", "FRI"]]
 
         self.client.login(username="a@a.com", password="1q2w3e4r!")
         response = self.client.get("/routines")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data["data"]), length)
+
+        response = self.client.get("/routines", data={
+            "date": "2022-02-22"
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["data"]), 1)

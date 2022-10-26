@@ -1,3 +1,6 @@
+from datetime import timedelta, datetime
+
+from django.db.models import Q
 from rest_framework.viewsets import ModelViewSet
 
 from api_routine.models import Routine
@@ -9,7 +12,13 @@ class RoutinesViewsets(ModelViewSet):
     response_message = None
 
     def get_queryset(self):
-        return Routine.objects.all()
+        query = Q(account_id=self.request.user.id)
+
+        date = self.request.GET.get("date")
+        if date:
+            end_date = datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1)
+            query.add(Q(created_at__gte=date, created_at__lt=end_date), Q.AND)
+        return Routine.objects.filter(query)
 
     def get_serializer_class(self):
         if self.action == "list":
