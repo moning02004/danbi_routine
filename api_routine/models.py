@@ -26,7 +26,7 @@ class Routine(models.Model):
 
 class RoutineResult(models.Model):
     routine_result_id = models.BigAutoField(primary_key=True)
-    routine = models.OneToOneField(Routine, on_delete=models.CASCADE, related_name="routine")
+    routine = models.OneToOneField(Routine, on_delete=models.CASCADE, related_name="result")
 
     result = models.CharField(max_length=4, default="NOT", choices=(
         ("NOT", "안함"), ("TRY", "시도"), ("DONE", "완료")
@@ -41,7 +41,7 @@ class RoutineResult(models.Model):
 
 
 class RoutineDay(models.Model):
-    routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+    routine = models.ForeignKey(Routine, on_delete=models.CASCADE, related_name="days")
     day = models.CharField(max_length=3)
 
     created_at = models.DateTimeField(auto_now_add=True)
