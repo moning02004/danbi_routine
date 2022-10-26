@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 
 from rest_framework.test import APITestCase
@@ -55,3 +56,7 @@ class RoutineTestCase(APITestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["data"]), 1)
+
+        single_response = self.client.get("/routines/1")
+        self.assertEqual(single_response.status_code, 200)
+        print(single_response.data)

@@ -5,18 +5,13 @@ from rest_framework.serializers import ModelSerializer
 from api_routine.models import Routine, RoutineDay, RoutineResult
 
 
-class RoutineResultSerializer(ModelSerializer):
-    class Meta:
-        model = RoutineResult
-        fields = ["result"]
-
-
-class RoutinesSerializer(ModelSerializer):
-    routine = RoutineResultSerializer()
+class RoutineSerializer(ModelSerializer):
+    result = serializers.SlugRelatedField(read_only=True, slug_field="result")
+    days = serializers.SlugRelatedField(many=True, read_only=True, slug_field="day")
 
     class Meta:
         model = Routine
-        fields = ["goal", "account_id", "routine", "title"]
+        fields = ["goal", "account_id", "title", "result", "days"]
 
 
 class RoutineUpdateSerializer(ModelSerializer):

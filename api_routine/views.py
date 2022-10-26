@@ -1,16 +1,25 @@
 from datetime import timedelta, datetime
 
 from django.db.models import Q
+from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ModelViewSet
 
 from api_routine.models import Routine
-from api_routine.serializers import RoutineUpdateSerializer, RoutinesSerializer
+from api_routine.serializers import RoutineUpdateSerializer, RoutineSerializer
 
 
-class RoutinesViewsets(ModelViewSet):
+class ResponseModelMixin:
     response_data = None
     response_message = None
 
+    def get_response_model(self):
+        return {
+            "data": self.response_data,
+            "message": self.response_message
+        }
+
+
+class RoutineListViewsets(ModelViewSet, ResponseModelMixin):
     def get_queryset(self):
         query = Q(account_id=self.request.user.id)
 
@@ -22,7 +31,7 @@ class RoutinesViewsets(ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == "list":
-            return RoutinesSerializer
+            return RoutineSerializer
         if self.action == "create":
             return RoutineUpdateSerializer
 
@@ -48,8 +57,23 @@ class RoutinesViewsets(ModelViewSet):
         response.data = self.get_response_model()
         return response
 
-    def get_response_model(self):
-        return {
-            "data": self.response_data,
-            "message": self.response_message
+
+class RoutineSingleViewsets(ModelViewSet, ResponseModelMixin):
+    def get_queryset(self):
+        query = Q(account_id=self.request.user.id)
+        return Routine.objects.filter(query)
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return RoutineSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+
+        self.response_data = response.data
+        self.response_message = {
+            "msg": "Routine lookup was successful.",
+            "status": "ROUTINE_DETAIL_OK"
         }
+        response.data = self.get_response_model()
+        return response

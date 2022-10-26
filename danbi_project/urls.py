@@ -20,6 +20,11 @@ list_method = {
     "get": "list",
     "post": "create"
 }
+detail_method = {
+    "get": "retrieve",
+    "patch": "partial_update",
+    "delete": "destroy"
+}
 urlpatterns = [
     path("routines", include("api_routine.urls")),
     path("users", include("api_user.urls")),
