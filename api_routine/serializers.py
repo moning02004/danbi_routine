@@ -5,6 +5,20 @@ from rest_framework.serializers import ModelSerializer
 from api_routine.models import Routine, RoutineDay, RoutineResult
 
 
+class RoutineResultSerializer(ModelSerializer):
+    class Meta:
+        model = RoutineResult
+        fields = ["result"]
+
+
+class RoutinesSerializer(ModelSerializer):
+    routine = RoutineResultSerializer()
+
+    class Meta:
+        model = Routine
+        fields = ["goal", "account_id", "routine", "title"]
+
+
 class RoutineUpdateSerializer(ModelSerializer):
     days = serializers.ListField(child=serializers.CharField(max_length=3), write_only=True)
 
@@ -24,4 +38,3 @@ class RoutineUpdateSerializer(ModelSerializer):
             RoutineResult.objects.create(routine=routine)
             [RoutineDay.objects.create(routine=routine, day=day) for day in validated_data["days"]]
         return routine
-
