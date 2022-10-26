@@ -59,4 +59,22 @@ class RoutineTestCase(APITestCase):
 
         single_response = self.client.get("/routines/1")
         self.assertEqual(single_response.status_code, 200)
-        print(single_response.data)
+
+    def test_update_routines(self):
+        routine = Routine.objects.create(account=self.user,
+                                         title=f"English Problem-solving",
+                                         category="HOMEWORK",
+                                         goal=f"Increase your English problem-sovling skills",
+                                         is_alarm=True)
+        RoutineResult.objects.create(routine=routine)
+        [RoutineDay.objects.create(routine=routine, day=day) for day in ["MON", "TUE", "FRI"]]
+
+        self.client.login(username="a@a.com", password="1q2w3e4r!")
+        edit_days = ["MON", "WED"]
+        response = self.client.patch(f"/routines/{routine.routine_id}", data={
+            "days": edit_days
+        })
+        self.assertEqual(response.status_code, 200)
+
+        routine.refresh_from_db()
+        self.assertEqual(sorted(routine.days.values_list("day", flat=True)), sorted(edit_days))

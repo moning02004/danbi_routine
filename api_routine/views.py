@@ -66,6 +66,8 @@ class RoutineSingleViewsets(ModelViewSet, ResponseModelMixin):
     def get_serializer_class(self):
         if self.action == "retrieve":
             return RoutineSerializer
+        if self.action == "partial_update":
+            return RoutineUpdateSerializer
 
     def retrieve(self, request, *args, **kwargs):
         response = super().retrieve(request, *args, **kwargs)
@@ -74,6 +76,19 @@ class RoutineSingleViewsets(ModelViewSet, ResponseModelMixin):
         self.response_message = {
             "msg": "Routine lookup was successful.",
             "status": "ROUTINE_DETAIL_OK"
+        }
+        response.data = self.get_response_model()
+        return response
+
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+
+        self.response_data = {
+            "routine_id": response.data["routine_id"]
+        }
+        self.response_message = {
+            "msg": "The routine has been modified.",
+            "status": "ROUTINE_UPDATE_OK"
         }
         response.data = self.get_response_model()
         return response

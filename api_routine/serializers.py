@@ -33,3 +33,16 @@ class RoutineUpdateSerializer(ModelSerializer):
             RoutineResult.objects.create(routine=routine)
             [RoutineDay.objects.create(routine=routine, day=day) for day in validated_data["days"]]
         return routine
+
+    def update(self, instance, validated_data):
+        with transaction.atomic():
+            for key, value in validated_data.items():
+                key != "days" and setattr(instance, key, value)
+            instance.save()
+
+            if validated_data.get("days"):
+                instance.days.exclude(day__in=validated_data["days"]).delete()
+                RoutineDay.objects.bulk_create([RoutineDay(routine=instance, day=day) for day in
+                                                set(validated_data["days"]) - set(
+                                                    instance.days.values_list("day", flat=True))])
+        return instance
