@@ -18,8 +18,5 @@ class UserUpdateSerializer(ModelSerializer):
         if matched_str is None:
             raise ValidationError("비밀번호는 8자리 이상 영문, 숫자, 특수문자를 포함해야 합니다.")
 
-        account = Account.objects.create(username=validated_data["username"])
-        account.set_password(validated_data["password"])
-        account.save()
-
+        account = Account.objects.create_user(username=validated_data["username"], password=validated_data["password"])
         return account

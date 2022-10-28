@@ -27,6 +27,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
+APPEND_SLASH = False
 AUTH_USER_MODEL = "api_user.Account"
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -35,6 +36,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
 INSTALLED_APPS = [
@@ -47,6 +49,8 @@ INSTALLED_APPS = [
 
     # third parties
     "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
 
     # local apps
     "api_user",
