@@ -1,5 +1,10 @@
 from rest_framework.response import Response
 
+from api_routine.constants import (ROUTINE_RESULT_UPDATE_STATUS, ROUTINE_LIST_MESSAGE, ROUTINE_LIST_STATUS,
+                                   ROUTINE_CREATE_MESSAGE, ROUTINE_DETAIL_MESSAGE, ROUTINE_DETAIL_STATUS,
+                                   ROUTINE_UPDATE_MESSAGE, ROUTINE_UPDATE_STATUS, ROUTINE_DELETE_MESSAGE,
+                                   ROUTINE_DELETE_STATUS, ROUTINE_RESULT_UPDATE_MESSAGE, ROUTINE_CREATE_STATUS)
+
 
 class RoutineResponseModelMixin:
     message = None
@@ -28,13 +33,13 @@ class RoutineResponseModelMixin:
 
 
 class RoutineListResponseModel(RoutineResponseModelMixin):
-    message = "Routine lookup was successful."
-    status = "ROUTINE_LIST_OK"
+    message = ROUTINE_LIST_MESSAGE
+    status = ROUTINE_LIST_STATUS
 
 
 class RoutineCreateResponseModel(RoutineResponseModelMixin):
-    message = "You have successfully created the routine."
-    status = "ROUTINE_CREATE_OK"
+    message = ROUTINE_CREATE_MESSAGE
+    status = ROUTINE_CREATE_STATUS
 
     def get_response_data(self):
         return {
@@ -43,29 +48,29 @@ class RoutineCreateResponseModel(RoutineResponseModelMixin):
 
 
 class RoutineRetrieveResponseModel(RoutineResponseModelMixin):
-    message = "Routine lookup was successful."
-    status = "ROUTINE_DETAIL_OK"
+    message = ROUTINE_DETAIL_MESSAGE
+    status = ROUTINE_DETAIL_STATUS
 
 
 class RoutineUpdateResponseModel(RoutineResponseModelMixin):
-    message = "The routine has been modified."
-    status = "ROUTINE_UPDATE_OK"
+    message = ROUTINE_UPDATE_MESSAGE
+    status = ROUTINE_UPDATE_STATUS
 
     def get_response_data(self):
         return self.get_response_data_of_id()
 
 
 class RoutineDeleteResponseModel(RoutineResponseModelMixin):
-    message = "The routine has been deleted."
-    status = "ROUTINE_DELETE_OK"
+    message = ROUTINE_DELETE_MESSAGE
+    status = ROUTINE_DELETE_STATUS
 
     def get_response_data(self):
         return self.get_response_data_of_id()
 
 
 class RoutineResultResponseModel(RoutineResponseModelMixin):
-    message = "The routine's result has been updated."
-    status = "ROUTINE_RESULT_UPDATE_OK"
+    message = ROUTINE_RESULT_UPDATE_MESSAGE
+    status = ROUTINE_RESULT_UPDATE_STATUS
 
     def get_response_data(self):
         return self.get_response_data_of_id()

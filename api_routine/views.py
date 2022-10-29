@@ -5,13 +5,13 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from api_routine.models import Routine
-from api_routine.responses import RoutineDeleteResponseModel, \
-    RoutineUpdateResponseModel, RoutineRetrieveResponseModel, RoutineCreateResponseModel, RoutineResultResponseModel
+from api_routine.responses import (RoutineDeleteResponseModel, RoutineUpdateResponseModel, RoutineRetrieveResponseModel,
+                                   RoutineCreateResponseModel, RoutineResultResponseModel)
 from api_routine.serializers import (RoutineUpdateSerializer, RoutineSerializer, RoutineDeleteSerializer,
                                      RoutineResultSerializer)
 
 
-class RoutineListViewsets(ModelViewSet):
+class RoutineListViewSet(ModelViewSet):
     response_model = None
 
     def get_queryset(self):
@@ -40,7 +40,7 @@ class RoutineListViewsets(ModelViewSet):
         return self.response_model(response).get_response()
 
 
-class RoutineSingleViewsets(ModelViewSet):
+class RoutineSingleViewSet(ModelViewSet):
     queryset = Routine.objects.all()
     response_model = None
 
