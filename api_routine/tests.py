@@ -22,20 +22,20 @@ class RoutineTestCase(APITestCase):
 
     def test_register_routine(self):
         title = "Problem-solving"
-
+        days = sorted(["MON", "WED", "FRI"])
         self.client.login(username="a@a.com", password="1q2w3e4r!")
         response = self.client.post("/routines", data={
             "title": title,
             "category": "HOMEWORK",
             "goal": "Increase your problem-solving skill",
             "is_alarm": True,
-            "days": ["MON", "WED", "FRI"],
+            "days": days,
         })
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Routine.objects.filter(title=title).exists())
 
         routine = Routine.objects.get(title=title)
-        self.assertEqual(RoutineDay.objects.filter(routine=routine).count(), 3)
+        self.assertEqual(sorted(routine.days.values_list("day", flat=True)), days)
 
     def test_get_routines(self):
         length = 3

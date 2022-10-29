@@ -42,9 +42,7 @@ class RoutineUpdateSerializer(ModelSerializer):
 
             if validated_data.get("days"):
                 instance.days.exclude(day__in=validated_data["days"]).delete()
-                RoutineDay.objects.bulk_create([RoutineDay(routine=instance, day=day) for day in
-                                                set(validated_data["days"]) - set(
-                                                    instance.days.values_list("day", flat=True))])
+                [RoutineDay.objects.get_or_create(routine=instance, day=day) for day in validated_data["days"]]
         return instance
 
 
@@ -66,7 +64,6 @@ class RoutineResultSerializer(ModelSerializer):
     class Meta:
         model = Routine
         fields = ["routine_id", "result"]
-        read_only_fields = ["routine_id"]
 
     def update(self, instance, validated_data):
         instance.result.result = validated_data["result"]
