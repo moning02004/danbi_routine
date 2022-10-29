@@ -13,7 +13,7 @@ class UserUpdateSerializer(ModelSerializer):
 
     def create(self, validated_data):
         matched_str = re.fullmatch(
-            r"(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+-=`{}\[\]<>?,./]).{8,}",
+            r"(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-=`{}\[\]<>?,./]).{8,}",
             validated_data["password"])
         if matched_str is None:
             raise ValidationError("비밀번호는 8자리 이상 영문, 숫자, 특수문자를 포함해야 합니다.")

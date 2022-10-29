@@ -17,6 +17,16 @@ class UserTestCase(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Account.objects.filter(username=username).exists())
 
+    def test_register_fail(self):
+        username = "a@a.com"
+        password = "1q2w3e4r"
+
+        response = self.client.post("/users", data={
+            "username": username,
+            "password": password,
+        })
+        self.assertEqual(response.status_code, 400)
+
     def test_get_token(self):
         username = "a@a.com"
         password = "1q2w3e4r!"
