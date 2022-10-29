@@ -40,18 +40,6 @@ class UserTestCase(APITestCase):
         self.assertIn("refresh", response.data.keys())
         self.assertIn("access", response.data.keys())
 
-    def test_refresh_token(self):
-        username = "a@a.com"
-        password = "1q2w3e4r!"
-        Account.objects.create_user(username=username, password=password)
-
-        response = self.client.post("/users/token", data={
-            "username": username,
-            "password": password,
-        })
-        self.assertIn("refresh", response.data.keys())
-        self.assertIn("access", response.data.keys())
-
     def test_expire_token(self):
         username = "a@a.com"
         password = "1q2w3e4r!"
