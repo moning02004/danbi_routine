@@ -1,39 +1,27 @@
-## 1. 설계
+# 1. 사용자에 대한 API
 
-Routine 은 개인적인 목표를 다루는 것이기에 Routine 에 관한 API 호출은 모두 인가된 사용자에게만 접근할 수 있게 하였습니다.
+|API URL|Method|기능|설명|
+|---|---|---|---|
+|/users|POST|회원가입|비밀번로 8자리 이상이며 영문, 숫자, 특수기호를 모두 포함해야 합니다.|
+|/users/token|POST|JWT 토큰 발급|인증을 위한 access token, refresh token을 발급합니다.|
+|/users/refresh|POST|JWT 토큰 refresh|access token 을 새로 발급합니다.|
+|/users/expire|POST|JWT refresh 토큰 발급|refresh 토큰을 만료시켜 access token 을 재발급받지 못하도록 합니다.|
 
-
-
-###routine 조회
-
-- 목록: GET /routines
-- 단건: GET /routines/{routine_id}
-
-
-
-###routine 생성
-
-- POST /routines
+## 1-1. 로그아웃
+로그아웃에 대한 기능은 세션을 통한 인증일 때, 필요한 기능으로 보여집니다. 
+하지만 JWT 로 구현했기 때문에 토큰을 재발급 받을 수 없도록 하는 것이 로그아웃과 비슷한 기능이라고 생각했습니다.
 
 
+# 2. Routine에 대한 API
 
-###routine 수정
+|API URL|Method|기능|설명|
+|---|---|---|---|
+|/routines|GET|사용자의 routine 리스트 조회|date get parameter 를 주어 특정 날짜에 대한 routine 리스트를 가져옵니다.|
+|/routines|POST|routine 생성|routine 을 생성합니다.|
+|/routines/{routine_id}|GET|routine 단건 조회|routine_id 의 routine 을 가져옵니다. |
+|/routines/{routine_id}|PATCH|routine 수정|routine_id 의 routine 을 수정합니다.|
+|/routines/{routine_id}/delete|PATCH|routine 제거|routine_id 의 routine 컬럼 중 is_deleted 를 True 로 저장합니다.|
+|/routines/{routine_id}/result|PATCH|routine 결과 수정|routine 의 결과를 수정합니다.|
 
-*routine_id 가 Optional 로 지정되어 있었지만 의도와는 다르게 다른 routine 이 수정될 수 있어 URL 에 포함시켰습니다.*
-
-- PATCH /routines/{routine_id}
-
-
-
-###routine 삭제
-
-*is_deleted 를 True 로 변경하기 위한 end-point 로 method 를 PATCH 로 하여 호출할 수 있도록 하였습니다.* 
-- PATCH /routines/{routine_id}/delete
-
-
-
-###routine 완료
-
-*Routine 의 결과를 변경하기 위한 API 를 추가했습니다.*
-
-- PATCH /routines/{routine_id}/result
+## 2-1. 구현 설명
+인증을 통해 어떤 사용자의 routine 을 반환해야하는 지 구현하였고, routine_id를 URL 에 명시하여 어떤 routine 을 조회하려고 하는 지 구현했습니다.
