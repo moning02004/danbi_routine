@@ -1,13 +1,13 @@
 class RoutineResponseModelMixin:
     response = None
-    response_data = None
-    response_message = None
 
     def get_response_data_of_id(self):
         return {
             "id": self.response.data["routine_id"]
         }
 
+
+class RoutineListResponseModel(RoutineResponseModelMixin):
     def get_response_model_for_list(self):
         self.response.data = {
             "data": self.response.data,
@@ -28,6 +28,8 @@ class RoutineResponseModelMixin:
         }
         return self.response
 
+
+class RoutineDetailResponseModel(RoutineResponseModelMixin):
     def get_response_model_for_retrieve(self):
         self.response.data = {
             "data": self.response.data,

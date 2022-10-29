@@ -5,12 +5,12 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from api_routine.models import Routine
-from api_routine.responses import RoutineResponseModelMixin
+from api_routine.responses import RoutineDetailResponseModel, RoutineListResponseModel
 from api_routine.serializers import (RoutineUpdateSerializer, RoutineSerializer, RoutineDeleteSerializer,
                                      RoutineResultSerializer)
 
 
-class RoutineListViewsets(ModelViewSet, RoutineResponseModelMixin):
+class RoutineListViewsets(ModelViewSet, RoutineListResponseModel):
     def get_queryset(self):
         query = Q(account_id=self.request.user.id)
 
@@ -35,7 +35,7 @@ class RoutineListViewsets(ModelViewSet, RoutineResponseModelMixin):
         return self.get_response_model_for_create()
 
 
-class RoutineSingleViewsets(ModelViewSet, RoutineResponseModelMixin):
+class RoutineSingleViewsets(ModelViewSet, RoutineDetailResponseModel):
     queryset = Routine.objects.all()
 
     def get_serializer_class(self):
@@ -53,7 +53,7 @@ class RoutineSingleViewsets(ModelViewSet, RoutineResponseModelMixin):
         return self.get_response_model_for_update()
 
 
-class RoutineDeleteAPI(UpdateAPIView, RoutineResponseModelMixin):
+class RoutineDeleteAPI(UpdateAPIView, RoutineDetailResponseModel):
     queryset = Routine.objects.all()
     serializer_class = RoutineDeleteSerializer
 
@@ -62,7 +62,7 @@ class RoutineDeleteAPI(UpdateAPIView, RoutineResponseModelMixin):
         return self.get_response_model_for_delete()
 
 
-class RoutineResultAPI(UpdateAPIView, RoutineResponseModelMixin):
+class RoutineResultAPI(UpdateAPIView, RoutineDetailResponseModel):
     queryset = Routine.objects.all()
     serializer_class = RoutineResultSerializer
 
