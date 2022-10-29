@@ -32,6 +32,7 @@ class RoutineTestCase(APITestCase):
             "days": days,
         })
         self.assertEqual(response.status_code, 201)
+        print(response.data["message"])
         self.assertTrue(Routine.objects.filter(title=title).exists())
 
         routine = Routine.objects.get(title=title)
