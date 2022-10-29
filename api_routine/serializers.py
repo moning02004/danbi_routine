@@ -7,6 +7,14 @@ from api_routine.models import Routine, RoutineDay, RoutineResult
 
 class RoutineSerializer(ModelSerializer):
     result = serializers.SlugRelatedField(read_only=True, slug_field="result")
+
+    class Meta:
+        model = Routine
+        fields = ["goal", "account_id", "title", "result"]
+
+
+class RoutineDetailSerializer(ModelSerializer):
+    result = serializers.SlugRelatedField(read_only=True, slug_field="result")
     days = serializers.SlugRelatedField(many=True, read_only=True, slug_field="day")
 
     class Meta:

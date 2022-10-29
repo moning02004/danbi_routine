@@ -44,7 +44,7 @@ class RoutineTestCase(APITestCase):
         length = 3
         for index in range(length):
             routine = self.get_temporary_routine()
-            date = datetime.strptime("2022-02-22", "%Y-%m-%d") - timedelta(days=index)
+            date = datetime.strptime("2022-02-22", "%Y-%m-%d") - timedelta(days=index // 2) # 짝수의 경우 과거 날짜로 생성
             routine.created_at = date
             routine.modified_at = date
             routine.save()
@@ -60,10 +60,12 @@ class RoutineTestCase(APITestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["message"]["msg"], ROUTINE_DETAIL_MESSAGE)
-        self.assertEqual(len(response.data["data"]), 1)
 
-        single_response = self.client.get("/routines/1")
-        self.assertEqual(single_response.status_code, 200)
+        count = self.user.routine_set.filter(created_at__gte="2022-02-22", created_at__lt="2022-02-23").count()
+        self.assertEqual(len(response.data["data"]), count)
+
+        response = self.client.get("/routines/1")
+        self.assertEqual(response.status_code, 200)
 
     def test_update_routines(self):
         routine = self.get_temporary_routine()

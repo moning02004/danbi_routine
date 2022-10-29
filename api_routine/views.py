@@ -8,7 +8,7 @@ from api_routine.models import Routine
 from api_routine.responses import (RoutineDeleteResponseModel, RoutineUpdateResponseModel, RoutineRetrieveResponseModel,
                                    RoutineCreateResponseModel, RoutineResultResponseModel)
 from api_routine.serializers import (RoutineUpdateSerializer, RoutineSerializer, RoutineDeleteSerializer,
-                                     RoutineResultSerializer)
+                                     RoutineResultSerializer, RoutineDetailSerializer)
 
 
 class RoutineListViewSet(ModelViewSet):
@@ -47,7 +47,7 @@ class RoutineSingleViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.action == "retrieve":
             self.response_model = RoutineRetrieveResponseModel
-            return RoutineSerializer
+            return RoutineDetailSerializer
         if self.action == "partial_update":
             self.response_model = RoutineUpdateResponseModel
             return RoutineUpdateSerializer
