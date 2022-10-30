@@ -15,7 +15,7 @@ class RoutineListViewSet(ModelViewSet):
     response_model = None
 
     def get_queryset(self):
-        query = Q(account_id=self.request.user.id)
+        query = Q(account_id=self.request.user.id, is_deleted=False)
 
         date = self.request.GET.get("date")
         if date:
@@ -41,7 +41,7 @@ class RoutineListViewSet(ModelViewSet):
 
 
 class RoutineSingleViewSet(ModelViewSet):
-    queryset = Routine.objects.all()
+    queryset = Routine.objects.filter(is_deleted=False)
     response_model = None
 
     def get_serializer_class(self):
@@ -62,7 +62,7 @@ class RoutineSingleViewSet(ModelViewSet):
 
 
 class RoutineDeleteAPI(UpdateAPIView):
-    queryset = Routine.objects.all()
+    queryset = Routine.objects.filter(is_deleted=False)
     serializer_class = RoutineDeleteSerializer
     response_model = RoutineDeleteResponseModel
 
@@ -72,7 +72,7 @@ class RoutineDeleteAPI(UpdateAPIView):
 
 
 class RoutineResultAPI(UpdateAPIView):
-    queryset = Routine.objects.all()
+    queryset = Routine.objects.filter(is_deleted=False)
     serializer_class = RoutineResultSerializer
     response_model = RoutineResultResponseModel
 
