@@ -32,8 +32,15 @@ class RoutineUpdateSerializer(ModelSerializer):
         read_only_fields = ["routine_id"]
 
     def validate(self, attrs):
-        if attrs.get("category") and attrs["category"].upper() not in ["MIRACLE", "HOMEWORK"]:
-            raise ValidationError("category 는 (MIRACLE, HOMEWORK) 중 하나를 입력해주세요.")
+        if attrs.get("category"):
+            attrs["category"] = attrs["category"].upper()
+            if attrs["category"] not in ["MIRACLE", "HOMEWORK"]:
+                raise ValidationError("category 는 (MIRACLE, HOMEWORK) 중 하나를 입력해주세요.")
+
+        if attrs.get("days"):
+            attrs["days"] = [x.upper() for x in attrs["days"]]
+            if set(attrs["days"]) - {"MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"}:
+                raise ValidationError("요일 선택이 잘못되었습니다.")
         return attrs
 
     def create(self, validated_data):
@@ -55,9 +62,8 @@ class RoutineUpdateSerializer(ModelSerializer):
             instance.save()
 
             if validated_data.get("days"):
-                days = [x.upper() for x in validated_data["days"]]
-                instance.days.exclude(day__in=days).delete()
-                [RoutineDay.objects.get_or_create(routine=instance, day=day) for day in days]
+                instance.days.exclude(day__in=validated_data["days"]).delete()
+                [RoutineDay.objects.get_or_create(routine=instance, day=day) for day in validated_data["days"]]
         return instance
 
 
@@ -81,7 +87,8 @@ class RoutineResultSerializer(ModelSerializer):
         fields = ["routine_id", "result"]
 
     def validate(self, attrs):
-        if attrs["result"].upper() not in ["NOT", "TRY", "DONE"]:
+        attrs["result"] = attrs["result"].upper()
+        if attrs["result"] not in ["NOT", "TRY", "DONE"]:
             raise ValidationError("category 는 (NOT, TRY, DONE) 중 하나를 입력해주세요.")
         return attrs
 
