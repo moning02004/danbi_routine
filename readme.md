@@ -1,5 +1,4 @@
 ### 1. 실행 방법
-DB 와 환경 설정은 테스트 편의상 나누어놓지 않았습니다.  
 ```bash
 pip install -r requiements.txt
 
@@ -38,9 +37,12 @@ python manage.py runserver
 
 ### 4. Response Model
 Response 구조가 동일하여 클래스를 만들었습니다. 
+
 메시지와 status 텍스트는 요청에 대한 고유값이므로 constant 에 정의하였습니다.
 
 ### 5. 입력 값에 대한 Validation Check
 models 에서 choices 로 지정하지 않은 값이 입력값이 되었을 때, 유효하지 않는다는 에러가 발생했습니다.
+
 소문자로 입력했을 때에도 발생했기에 해결하고자 serializer 의 to_internal_value 메서드를 사용했습니다.
+
 to_internal_value 에서 대문자로 치환하고 validate 에서 유효성 검사를 하도록 구현했습니다.
