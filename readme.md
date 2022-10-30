@@ -36,12 +36,6 @@ python manage.py runserver
 
 인증을 통해 어떤 사용자의 routine 을 반환해야하는 지 구현하였고, routine_id를 URL 에 명시하여 어떤 routine 을 조회하려고 하는 지 구현했습니다.
 
-routine 에 대한 결과는 routine 에 독립적으로 존재하기 때문에 1:1 관계로 설정했습니다.
-
-결과는 설정한 요일에 한 번이라도 했으면 TRY, 안 했으면 NOT, 모두 완료했으면 DONE 으로 저장하는 것으로 간주했습니다. 
-
-
-
 ### 4. Response Model
 Response 구조가 동일하여 클래스를 만들었습니다. 
 메시지와 status 텍스트는 요청에 대한 고유값이므로 constant 에 정의하였습니다.
