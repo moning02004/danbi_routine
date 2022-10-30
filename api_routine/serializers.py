@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.http import QueryDict
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
@@ -31,16 +32,25 @@ class RoutineUpdateSerializer(ModelSerializer):
         fields = ["routine_id", "title", "category", "goal", "is_alarm", "days"]
         read_only_fields = ["routine_id"]
 
-    def validate(self, attrs):
-        if attrs.get("category"):
-            attrs["category"] = attrs["category"].upper()
-            if attrs["category"] not in ["MIRACLE", "HOMEWORK"]:
-                raise ValidationError("category 는 (MIRACLE, HOMEWORK) 중 하나를 입력해주세요.")
+    def to_internal_value(self, data: QueryDict):
+        value = data.dict()
 
-        if attrs.get("days"):
-            attrs["days"] = [x.upper() for x in attrs["days"]]
-            if set(attrs["days"]) - {"MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"}:
-                raise ValidationError("요일 선택이 잘못되었습니다.")
+        if data.get("category"):
+            value["category"] = data["category"].upper()
+
+        if data.get("days"):
+            value["days"] = [x.upper() for x in data.getlist("days")]
+        return value
+
+    def validate(self, attrs):
+        if not attrs:
+            raise ValidationError("필드를 하나 이상 입력해주세요. (title, category, goal, is_alarm)")
+
+        if attrs.get("category") and attrs["category"] not in ["MIRACLE", "HOMEWORK"]:
+            raise ValidationError("category 는 (MIRACLE, HOMEWORK) 중 하나를 입력해주세요.")
+
+        if attrs.get("days") and set(attrs["days"]) - {"MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"}:
+            raise ValidationError("요일 선택이 잘못되었습니다.")
         return attrs
 
     def create(self, validated_data):
@@ -86,8 +96,12 @@ class RoutineResultSerializer(ModelSerializer):
         model = Routine
         fields = ["routine_id", "result"]
 
+    def to_internal_value(self, data):
+        value = data.dict()
+        value["result"] = data.get("result").upper()
+        return value
+
     def validate(self, attrs):
-        attrs["result"] = attrs["result"].upper()
         if attrs["result"] not in ["NOT", "TRY", "DONE"]:
             raise ValidationError("category 는 (NOT, TRY, DONE) 중 하나를 입력해주세요.")
         return attrs

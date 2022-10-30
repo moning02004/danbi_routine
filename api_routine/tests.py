@@ -35,7 +35,7 @@ class RoutineSuccessTestCase(RoutineTestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.post("/routines", data={
             "title": title,
-            "category": "HOMEWORK",
+            "category": "HOMeWORK",
             "goal": "Increase your problem-solving skill",
             "is_alarm": True,
             "days": days,
