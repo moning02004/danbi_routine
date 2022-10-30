@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from api_routine.models import Routine
 from api_routine.responses import (RoutineDeleteResponseModel, RoutineUpdateResponseModel, RoutineRetrieveResponseModel,
-                                   RoutineCreateResponseModel, RoutineResultResponseModel)
+                                   RoutineCreateResponseModel, RoutineResultResponseModel, RoutineListResponseModel)
 from api_routine.serializers import (RoutineUpdateSerializer, RoutineSerializer, RoutineDeleteSerializer,
                                      RoutineResultSerializer, RoutineDetailSerializer)
 
@@ -25,7 +25,7 @@ class RoutineListViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == "list":
-            self.response_model = RoutineRetrieveResponseModel
+            self.response_model = RoutineListResponseModel
             return RoutineSerializer
         if self.action == "create":
             self.response_model = RoutineCreateResponseModel
