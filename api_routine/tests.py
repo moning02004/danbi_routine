@@ -98,6 +98,12 @@ class RoutineSuccessTestCase(RoutineTestCase):
 
         routine.refresh_from_db()
         self.assertTrue(routine.is_deleted)
+        response = self.client.get(f"/routines")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["data"]), 0)
+
+        response = self.client.get(f"/routines/{routine.routine_id}")
+        self.assertEqual(response.status_code, 404)
 
     def test_result_routines(self):
         routine = self.get_temporary_routine()
