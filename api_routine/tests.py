@@ -11,6 +11,10 @@ from api_user.models import Account
 class RoutineTestCase(APITestCase):
     def setUp(self) -> None:
         self.user = Account.objects.create_user(username="a@a.com", password="1q2w3e4r!")
+        self.access_token = self.client.post("/users/token", data={
+            "username": "a@a.com",
+            "password": "1q2w3e4r!"
+        }).data["access"]
 
     def get_temporary_routine(self):
         routine = Routine.objects.create(account=self.user,
@@ -22,10 +26,13 @@ class RoutineTestCase(APITestCase):
         [RoutineDay.objects.create(routine=routine, day=day) for day in ["MON", "TUE", "FRI"]]
         return routine
 
+
+class RoutineSuccessTestCase(RoutineTestCase):
     def test_register_routine(self):
         title = "Problem-solving"
-        days = sorted(["MON", "WED", "FRI"])
-        self.client.login(username="a@a.com", password="1q2w3e4r!")
+        days = ["mon", "WED", "FRI"]
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.post("/routines", data={
             "title": title,
             "category": "HOMEWORK",
@@ -38,18 +45,18 @@ class RoutineTestCase(APITestCase):
         self.assertTrue(Routine.objects.filter(title=title).exists())
 
         routine = Routine.objects.get(title=title)
-        self.assertEqual(sorted(routine.days.values_list("day", flat=True)), days)
+        self.assertEqual(sorted(routine.days.values_list("day", flat=True)), sorted([x.upper() for x in days]))
 
     def test_get_routines(self):
         length = 3
         for index in range(length):
             routine = self.get_temporary_routine()
-            date = datetime.strptime("2022-02-22", "%Y-%m-%d") - timedelta(days=index // 2) # 짝수의 경우 과거 날짜로 생성
+            date = datetime.strptime("2022-02-22", "%Y-%m-%d") - timedelta(days=index // 2)  # 짝수의 경우 과거 날짜로 생성
             routine.created_at = date
             routine.modified_at = date
             routine.save()
 
-        self.client.login(username="a@a.com", password="1q2w3e4r!")
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.get("/routines")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["message"]["msg"], ROUTINE_LIST_MESSAGE)
@@ -70,7 +77,7 @@ class RoutineTestCase(APITestCase):
     def test_update_routines(self):
         routine = self.get_temporary_routine()
 
-        self.client.login(username="a@a.com", password="1q2w3e4r!")
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         edit_days = ["MON", "WED"]
         response = self.client.patch(f"/routines/{routine.routine_id}", data={
             "days": edit_days
@@ -84,7 +91,7 @@ class RoutineTestCase(APITestCase):
     def test_delete_routines(self):
         routine = self.get_temporary_routine()
 
-        self.client.login(username="a@a.com", password="1q2w3e4r!")
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.patch(f"/routines/{routine.routine_id}/delete")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["message"]["msg"], ROUTINE_DELETE_MESSAGE)
@@ -95,8 +102,8 @@ class RoutineTestCase(APITestCase):
     def test_result_routines(self):
         routine = self.get_temporary_routine()
 
-        edit_result = "TRY"
-        self.client.login(username="a@a.com", password="1q2w3e4r!")
+        edit_result = "TrY"
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
         response = self.client.patch(f"/routines/{routine.routine_id}/result", data={
             "result": edit_result
         })
@@ -104,4 +111,31 @@ class RoutineTestCase(APITestCase):
         self.assertEqual(response.data["message"]["msg"], ROUTINE_RESULT_UPDATE_MESSAGE)
 
         routine.refresh_from_db()
-        self.assertEqual(routine.result.result, edit_result)
+        self.assertEqual(routine.result.result, edit_result.upper())
+
+
+class RoutineFailTestCase(RoutineTestCase):
+
+    def test_not_authentication(self):
+        response = self.client.patch(f"/routines")
+        self.assertEqual(response.status_code, 401)
+
+    def test_result_routines(self):
+        routine = self.get_temporary_routine()
+
+        edit_result = "TRY_DONE"
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
+        response = self.client.patch(f"/routines/{routine.routine_id}/result", data={
+            "result": edit_result
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_routines(self):
+        routine = self.get_temporary_routine()
+
+        edit_category = "WORK"
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
+        response = self.client.patch(f"/routines/{routine.routine_id}", data={
+            "category": edit_category
+        })
+        self.assertEqual(response.status_code, 400)
