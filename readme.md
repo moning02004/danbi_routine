@@ -7,7 +7,6 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-
 ### 2. 사용자에 대한 API
 
 |API URL|Method|기능|설명|
@@ -42,6 +41,12 @@ routine 에 대한 결과는 routine 에 독립적으로 존재하기 때문에 
 결과는 설정한 요일에 한 번이라도 했으면 TRY, 안 했으면 NOT, 모두 완료했으면 DONE 으로 저장하는 것으로 간주했습니다. 
 
 
+
 ### 4. Response Model
 Response 구조가 동일하여 클래스를 만들었습니다. 
 메시지와 status 텍스트는 요청에 대한 고유값이므로 constant 에 정의하였습니다.
+
+### 5. 입력 값에 대한 Validation Check
+models 에서 choices 로 지정하지 않은 값이 입력값이 되었을 때, 유효하지 않는다는 에러가 발생했습니다.
+소문자로 입력했을 때에도 발생했기에 해결하고자 serializer 의 to_internal_value 메서드를 사용했습니다.
+to_internal_value 에서 대문자로 치환하고 validate 에서 유효성 검사를 하도록 구현했습니다.
