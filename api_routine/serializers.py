@@ -1,5 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
 from api_routine.models import Routine, RoutineDay, RoutineResult
@@ -30,6 +31,11 @@ class RoutineUpdateSerializer(ModelSerializer):
         fields = ["routine_id", "title", "category", "goal", "is_alarm", "days"]
         read_only_fields = ["routine_id"]
 
+    def validate(self, attrs):
+        if attrs.get("category") and attrs["category"].upper() not in ["MIRACLE", "HOMEWORK"]:
+            raise ValidationError("category 는 (MIRACLE, HOMEWORK) 중 하나를 입력해주세요.")
+        return attrs
+
     def create(self, validated_data):
         columns = dict()
         for key, value in validated_data.items():
@@ -49,8 +55,9 @@ class RoutineUpdateSerializer(ModelSerializer):
             instance.save()
 
             if validated_data.get("days"):
-                instance.days.exclude(day__in=validated_data["days"]).delete()
-                [RoutineDay.objects.get_or_create(routine=instance, day=day) for day in validated_data["days"]]
+                days = [x.upper() for x in validated_data["days"]]
+                instance.days.exclude(day__in=days).delete()
+                [RoutineDay.objects.get_or_create(routine=instance, day=day) for day in days]
         return instance
 
 
@@ -72,6 +79,11 @@ class RoutineResultSerializer(ModelSerializer):
     class Meta:
         model = Routine
         fields = ["routine_id", "result"]
+
+    def validate(self, attrs):
+        if attrs["result"].upper() not in ["NOT", "TRY", "DONE"]:
+            raise ValidationError("category 는 (NOT, TRY, DONE) 중 하나를 입력해주세요.")
+        return attrs
 
     def update(self, instance, validated_data):
         instance.result.result = validated_data["result"]
