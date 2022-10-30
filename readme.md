@@ -25,3 +25,8 @@
 
 ## 2-1. 구현 설명
 인증을 통해 어떤 사용자의 routine 을 반환해야하는 지 구현하였고, routine_id를 URL 에 명시하여 어떤 routine 을 조회하려고 하는 지 구현했습니다.
+
+
+# 3. Response Model
+Response 구조가 동일하여 클래스를 만들었습니다. 
+메시지와 status 텍스트는 요청에 대한 고유값이므로 constant 에 정의하였습니다.
