@@ -18,7 +18,7 @@ class RoutineResponseModelMixin:
 
     def get_response_data_of_id(self):
         return {
-            "id": self.response.data["routine_id"]
+            "routine_id": self.response.data["routine_id"]
         }
 
     def get_response(self):
@@ -42,9 +42,7 @@ class RoutineCreateResponseModel(RoutineResponseModelMixin):
     status = ROUTINE_CREATE_STATUS
 
     def get_response_data(self):
-        return {
-            "id": self.response.data["routine_id"]
-        }
+        return self.get_response_data_of_id()
 
 
 class RoutineRetrieveResponseModel(RoutineResponseModelMixin):
