@@ -12,8 +12,6 @@ from api_routine.serializers import (RoutineUpdateSerializer, RoutineSerializer,
 
 
 class RoutineListViewSet(ModelViewSet):
-    response_model = None
-
     def get_queryset(self):
         query = Q(account_id=self.request.user.id, is_deleted=False)
 
@@ -25,57 +23,42 @@ class RoutineListViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == "list":
-            self.response_model = RoutineListResponseModel
             return RoutineSerializer
         if self.action == "create":
-            self.response_model = RoutineCreateResponseModel
             return RoutineUpdateSerializer
 
-    def list(self, request, *args, **kwargs):
-        response = super().list(request, *args, **kwargs)
-        return self.response_model(response).get_response()
-
-    def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        return self.response_model(response).get_response()
+    def get_renderers(self):
+        if self.action == "list":
+            self.renderer_classes = [RoutineListResponseModel]
+        if self.action == "create":
+            self.renderer_classes = [RoutineCreateResponseModel]
+        return super().get_renderers()
 
 
 class RoutineSingleViewSet(ModelViewSet):
     queryset = Routine.objects.filter(is_deleted=False)
-    response_model = None
 
     def get_serializer_class(self):
         if self.action == "retrieve":
-            self.response_model = RoutineRetrieveResponseModel
             return RoutineDetailSerializer
         if self.action == "partial_update":
-            self.response_model = RoutineUpdateResponseModel
             return RoutineUpdateSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        response = super().retrieve(request, *args, **kwargs)
-        return self.response_model(response).get_response()
-
-    def partial_update(self, request, *args, **kwargs):
-        response = super().partial_update(request, *args, **kwargs)
-        return self.response_model(response).get_response()
+    def get_renderers(self):
+        if self.action == "retrieve":
+            self.renderer_classes = [RoutineRetrieveResponseModel]
+        if self.action == "partial_update":
+            self.renderer_classes = [RoutineUpdateResponseModel]
+        return super().get_renderers()
 
 
 class RoutineDeleteAPI(UpdateAPIView):
     queryset = Routine.objects.filter(is_deleted=False)
     serializer_class = RoutineDeleteSerializer
-    response_model = RoutineDeleteResponseModel
-
-    def partial_update(self, request, *args, **kwargs):
-        response = super().partial_update(request, *args, **kwargs)
-        return self.response_model(response).get_response()
+    renderer_classes = [RoutineDeleteResponseModel]
 
 
 class RoutineResultAPI(UpdateAPIView):
     queryset = Routine.objects.filter(is_deleted=False)
     serializer_class = RoutineResultSerializer
-    response_model = RoutineResultResponseModel
-
-    def partial_update(self, request, *args, **kwargs):
-        response = super().partial_update(request, *args, **kwargs)
-        return self.response_model(response).get_response()
+    renderer_classes = [RoutineResultResponseModel]

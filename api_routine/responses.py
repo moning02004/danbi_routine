@@ -1,4 +1,4 @@
-from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 
 from api_routine.constants import (ROUTINE_RESULT_UPDATE_STATUS, ROUTINE_LIST_MESSAGE, ROUTINE_LIST_STATUS,
                                    ROUTINE_CREATE_MESSAGE, ROUTINE_DETAIL_MESSAGE, ROUTINE_DETAIL_STATUS,
@@ -6,30 +6,34 @@ from api_routine.constants import (ROUTINE_RESULT_UPDATE_STATUS, ROUTINE_LIST_ME
                                    ROUTINE_DELETE_STATUS, ROUTINE_RESULT_UPDATE_MESSAGE, ROUTINE_CREATE_STATUS)
 
 
-class RoutineResponseModelMixin:
+class RoutineResponseModelMixin(JSONRenderer):
     message = None
     status = None
+    response_data = None
 
-    def __init__(self, response: Response = None):
-        self.response = response
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        response = renderer_context["response"]
+        if str(response.status_code).startswith("4"):
+            return super().render(data, accepted_media_type=None, renderer_context=None)
 
-    def get_response_data(self):
-        return self.response.data
-
-    def get_response_data_of_id(self):
-        return {
-            "routine_id": self.response.data["routine_id"]
-        }
-
-    def get_response(self):
-        self.response.data = {
+        self.response_data = response.data
+        data = {
             "data": self.get_response_data(),
             "message": {
                 "msg": self.message,
                 "status": self.status
             }
         }
-        return self.response
+        response.data = data
+        return super().render(data, accepted_media_type=accepted_media_type, renderer_context=renderer_context)
+
+    def get_response_data(self):
+        return self.response_data
+
+    def get_response_data_of_id(self):
+        return {
+            "routine_id": self.response_data["routine_id"]
+        }
 
 
 class RoutineListResponseModel(RoutineResponseModelMixin):
